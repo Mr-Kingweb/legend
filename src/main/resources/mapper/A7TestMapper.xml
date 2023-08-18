@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.joker0.generator.mapper.A7TestMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.joker0.generator.domain.A7Test">
+            <result property="millisecond" column="millisecond" jdbcType="TIMESTAMP"/>
+            <result property="meterNum" column="meter_num" jdbcType="CHAR"/>
+            <result property="pwrUp" column="pwr_up" jdbcType="DECIMAL"/>
+            <result property="pwrDown" column="pwr_down" jdbcType="DECIMAL"/>
+            <result property="fhl" column="fhl" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        millisecond,meter_num,pwr_up,
+        pwr_down,fhl
+    </sql>
+    <select id="getAllByMeterNum" resultMap="BaseResultMap">
+        SELECT millisecond, meter_num, pwr_up, pwr_down, fhl
+        FROM A7_Test
+        WHERE meter_num like #{meterNum} + '%'
+        order by fhl asc
+    </select>
+
+    <select id="getAllByMeterNumBp" resultMap="BaseResultMap">
+        WITH CTE AS (
+            SELECT millisecond, meter_num, pwr_up, pwr_down, fhl,
+                   ROW_NUMBER() OVER (PARTITION BY fhl ORDER BY ABS(DATEDIFF(ms, millisecond, GETDATE())) asc) as rn
+            FROM A7_Test
+            WHERE meter_num = #{meterNum,jdbcType=VARCHAR}
+        )
+        SELECT millisecond, meter_num, pwr_up, pwr_down, fhl
+        FROM CTE
+        WHERE rn = 1
+        ORDER BY fhl
+    </select>
+
+    <select id="getMeterNum" resultType="string">
+        SELECT DISTINCT SUBSTRING(LTRIM(RTRIM(meter_num)), 1, LEN(meter_num) - 1) AS meter_num
+        FROM A7_Test
+        WHERE meter_num IS NOT NULL
+
+    </select>
+</mapper>
