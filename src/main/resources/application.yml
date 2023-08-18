@@ -1,4 +1,4 @@
-
+# 由于版本差距
 server:
   port: 8099
 
@@ -7,11 +7,7 @@ server:
 spring:
   mvc:
     log-request-details: true
-  datasource:
-    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    url: jdbc:sqlserver://192.168.8.2:1433;databaseName=Data_WaterMeter
-    username: sa
-    password: Aa123456
+# 本地具体配置
 
 mybatis:
   type-aliases-package: com.example.first_floor.generator.domain
